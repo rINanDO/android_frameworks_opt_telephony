@@ -1394,4 +1394,13 @@ public class SimulatedCommandsVerifier implements CommandsInterface {
 
     }
 
+    @Override
+    public void setOnCatSendSmsResult(Handler h, int what, Object obj) {
+
+    }
+
+    @Override
+    public void unSetOnCatSendSmsResult(Handler h) {
+
+    }
 }

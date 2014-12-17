@@ -2093,4 +2093,14 @@ public class SimulatedCommands extends BaseCommands
     public boolean isDataAllowed() {
         return mAllowed.get();
     }
+
+    @Override
+    public void setOnCatSendSmsResult(Handler h, int what, Object obj) {
+
+    }
+
+    @Override
+    public void unSetOnCatSendSmsResult(Handler h) {
+
+    }
 }
