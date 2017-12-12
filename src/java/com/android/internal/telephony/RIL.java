@@ -140,7 +140,7 @@ class RILRequest {
      * @param result sent when operation completes
      * @return a RILRequest instance from the pool.
      */
-    protected static RILRequest obtain(int request, Message result) {
+    private static RILRequest obtain(int request, Message result) {
         RILRequest rr = null;
 
         synchronized(sPoolSync) {
@@ -271,7 +271,7 @@ class RILRequest {
  *
  * {@hide}
  */
-public class RIL extends BaseCommands implements CommandsInterface {
+public final class RIL extends BaseCommands implements CommandsInterface {
     static final String RILJ_LOG_TAG = "RILJ";
     // Have a separate wakelock instance for Ack
     static final String RILJ_ACK_WAKELOCK_NAME = "RILJ_ACK_WL";
@@ -323,13 +323,13 @@ public class RIL extends BaseCommands implements CommandsInterface {
     private List<String> mOldRilFeatures;
 
     /* default work source which will blame phone process */
-    protected WorkSource mRILDefaultWorkSource;
+    private WorkSource mRILDefaultWorkSource;
 
     /* Worksource containing all applications causing wakelock to be held */
     private WorkSource mActiveWakelockWorkSource;
 
     /** Telephony metrics instance for logging metrics event */
-    protected TelephonyMetrics mMetrics = TelephonyMetrics.getInstance();
+    private TelephonyMetrics mMetrics = TelephonyMetrics.getInstance();
 
     boolean mIsMobileNetworkSupported;
     RadioResponse mRadioResponse;
@@ -481,7 +481,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         }
     }
 
-    protected void resetProxyAndRequestList() {
+    private void resetProxyAndRequestList() {
         mRadioProxy = null;
         mOemHookProxy = null;
 
@@ -499,7 +499,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         // it here. Current hack is to call getService() on death notification after a delay.
     }
 
-    protected IRadio getRadioProxy(Message result) {
+    private IRadio getRadioProxy(Message result) {
         if (!mIsMobileNetworkSupported) {
             if (RILJ_LOGV) riljLog("getRadioProxy: Not calling getService(): wifi-only");
             if (result != null) {
@@ -660,7 +660,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         }
     }
 
-    protected void addRequest(RILRequest rr) {
+    private void addRequest(RILRequest rr) {
         acquireWakeLock(rr, FOR_WAKELOCK);
         synchronized (mRequestList) {
             rr.mStartTimeMs = SystemClock.elapsedRealtime();
@@ -668,13 +668,13 @@ public class RIL extends BaseCommands implements CommandsInterface {
         }
     }
 
-    protected RILRequest obtainRequest(int request, Message result, WorkSource workSource) {
+    private RILRequest obtainRequest(int request, Message result, WorkSource workSource) {
         RILRequest rr = RILRequest.obtain(request, result, workSource);
         addRequest(rr);
         return rr;
     }
 
-    protected void handleRadioProxyExceptionForRR(RILRequest rr, String caller, Exception e) {
+    private void handleRadioProxyExceptionForRR(RILRequest rr, String caller, Exception e) {
         riljLoge(caller + ": " + e);
         resetProxyAndRequestList();
 
@@ -686,7 +686,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
                 IRADIO_GET_SERVICE_DELAY_MILLIS);
     }
 
-    protected String convertNullToEmptyString(String string) {
+    private String convertNullToEmptyString(String string) {
         return string != null ? string : "";
     }
 
@@ -2535,7 +2535,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         }
     }
 
-    protected void constructCdmaSendSmsRilRequest(CdmaSmsMessage msg, byte[] pdu) {
+    private void constructCdmaSendSmsRilRequest(CdmaSmsMessage msg, byte[] pdu) {
         int addrNbrOfDigits;
         int subaddrNbrOfDigits;
         int bearerDataLength;
@@ -4064,7 +4064,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
     /**
      * Function to send ack and acquire related wakelock
      */
-    protected void sendAck() {
+    private void sendAck() {
         // TODO: Remove rr and clean up acquireWakelock for response and ack
         RILRequest rr = RILRequest.obtain(RIL_RESPONSE_ACKNOWLEDGEMENT, null,
                 mRILDefaultWorkSource);
@@ -4108,7 +4108,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
      * happen often.
      */
 
-    protected void acquireWakeLock(RILRequest rr, int wakeLockType) {
+    private void acquireWakeLock(RILRequest rr, int wakeLockType) {
         synchronized (rr) {
             if (rr.mWakeLockType != INVALID_WAKELOCK) {
                 Rlog.d(RILJ_LOG_TAG, "Failed to aquire wakelock for " + rr.serialString());
@@ -4158,7 +4158,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         }
     }
 
-    protected void decrementWakeLock(RILRequest rr) {
+    private void decrementWakeLock(RILRequest rr) {
         synchronized (rr) {
             switch(rr.mWakeLockType) {
                 case FOR_WAKELOCK:
@@ -4222,7 +4222,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
      * @param error is the RIL_Errno sent back
      * @param loggable true means to print all requests in mRequestList
      */
-    protected void clearRequestList(int error, boolean loggable) {
+    private void clearRequestList(int error, boolean loggable) {
         RILRequest rr;
         synchronized (mRequestList) {
             int count = mRequestList.size();
@@ -4245,7 +4245,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         }
     }
 
-    protected RILRequest findAndRemoveRequestFromList(int serial) {
+    private RILRequest findAndRemoveRequestFromList(int serial) {
         RILRequest rr = null;
         synchronized (mRequestList) {
             rr = mRequestList.get(serial);
@@ -4257,7 +4257,7 @@ public class RIL extends BaseCommands implements CommandsInterface {
         return rr;
     }
 
-    protected void addToRilHistogram(RILRequest rr) {
+    private void addToRilHistogram(RILRequest rr) {
         long endTime = SystemClock.elapsedRealtime();
         int totalTime = (int) (endTime - rr.mStartTimeMs);
 
